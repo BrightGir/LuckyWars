@@ -1,0 +1,9 @@
+name: SkyLuckyWars
+version: '${version}'
+main: me.bright.skyluckywars.LuckyWars
+api-version: 1.16
+commands:
+  getluckyblock:
+  forcestart:
+depend: [SkyLib, WorldEdit]
+
