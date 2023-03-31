@@ -36,6 +36,8 @@ public class GameInfoMySQL extends MySQL implements Creatable {
                 0, 0, 0, p.getUniqueId().toString());
     }
 
+
+
     @Override
     public String getDbHost() {
         return config.getString("settings.db.host");

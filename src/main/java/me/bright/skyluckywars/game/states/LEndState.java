@@ -70,12 +70,11 @@ public class LEndState extends EndState {
         }
       //  Bukkit.getLogger().info(nameWinner + " nameWinner");
         Map<String, Integer> top = sortByComparator(((LGame)getGame()).getMapKills(),false);
-        getGame().broadCastColor(" ");
-        getGame().broadCastColor(" &e&lЛучшие игроки");
+        getGame().broadCastColor(" ",false);
+        getGame().broadCastColor(" &e&lЛучшие игроки",false);
         for(int i = 0; i < 3; i++) {
             String s1 = "&cN/A";
             String s2 = "&cN/A";
-
         }
         int i = 1;
         for(Map.Entry entry: top.entrySet()) {
@@ -88,15 +87,15 @@ public class LEndState extends EndState {
                 addStr = " &6(Победитель)";
             }
             getGame().broadCastColor(" &f" + i + ". &a" + entry.getKey() + " - " + kills + " " +
-                    Messenger.correct(kills,"убийство","убийства","убийств") + addStr);
+                    Messenger.correct(kills,"убийство","убийства","убийств") + addStr,false);
             i++;
         }
         while(i <= 3) {
             String s = "&cN/A";
-            getGame().broadCastColor(" " + i + ". " + s + " - " + s);
+            getGame().broadCastColor(" &f" + i + ". " + s + " - " + s,false);
             i++;
         }
-        getGame().broadCastColor(" ");
+        getGame().broadCastColor(" ",false);
         /*
              chanceLevels.sort(new Comparator<Pair<Integer, List<Integer>>>() {
             @Override
@@ -110,7 +109,7 @@ public class LEndState extends EndState {
          */
 
 
-        getGame().broadCastColor("&aИгра закончена");
+        getGame().broadCastColor("&aИгра закончена",true);
     }
 
     @Override
@@ -178,12 +177,12 @@ public class LEndState extends EndState {
     }
 
     private void updateInformation(SPlayer sp, GameInfoMySQL sql, LDbType type) {
-        int kills = (int) sql.get("SELECT * WHERE \"uuid\" = \"" + sp.getPlayer().getUniqueId() + "\"", type.getDbStringName());
+        int kills = (int) sql.get("SELECT * from " + sql.getTableName() +  " WHERE 'uuid' = '" + sp.getPlayer().getUniqueId() + "'", type.getDbStringName());
         sql.updateData(sp.getPlayer(),type.getDbStringName(),kills+(int)sp.getInfoOrDefault(type.getDbStringName(),0));
     }
 
     private void updateInformation(SPlayer sp, GameInfoMySQL sql, LDbType type, int incrementedValue) {
-        int kills = (int) sql.get("SELECT * WHERE \"uuid\" = \"" + sp.getPlayer().getUniqueId() + "\"", type.getDbStringName());;
+        int kills = (int) sql.get("SELECT * from " + sql.getTableName() +  " WHERE 'uuid' = '" + sp.getPlayer().getUniqueId() + "'", type.getDbStringName());
         sql.updateData(sp.getPlayer(),type.getDbStringName(),kills+incrementedValue);
     }
 

@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static me.bright.skylib.game.GameState.WAITING;
+
 public class TechnicGameListener implements Listener {
 
     private LuckyWars plugin;
@@ -51,11 +53,11 @@ public class TechnicGameListener implements Listener {
         try {
             game.addPlayer(event.getPlayer());
         } catch (Exception e) {
-
+            e.printStackTrace();
             try {
                 plugin.redirectToLobby(event.getPlayer());
             } catch (Exception e1) {
-                event.getPlayer().kick(Component.text("Лобби недоступно!"));
+               event.getPlayer().kick(Component.text("Лобби недоступно!"));
             }
         }
      //   Bukkit.getLogger().info("game add player");
@@ -66,11 +68,22 @@ public class TechnicGameListener implements Listener {
         Game game = event.getGame();
         event.getPlayer().setInvulnerable(true);
         event.getPlayer().setInvisible(false);
+    //    event.getPlayer().setArrowsInBody(0);
+        event.getPlayer().setSilent(false);;
         event.getPlayer().setCollidable(true);
         game.broadCastColor("&fИгрок &a" + event.getPlayer().getName() + " &fприсоединился к игре (&a" +
-                game.getPlayersSize() + "/&a" + game.getMaxPlayers() + "&f)");
+                game.getPlayersSize() + "/&a" + game.getMaxPlayers() + "&f)",true);
+        game.getPlayers().forEach(p -> {
+            p.showPlayer(game.getArena().getPlugin(),event.getPlayer());
+            event.getPlayer().showPlayer(game.getArena().getPlugin(), p);
+        });
        LuckyWars pl = ((LuckyWars) event.getGame().getArena().getPlugin());
+       event.getPlayer().teleport(event.getGame().getLobbyLocation());
+       if(game.getState() != null && game.getState().getEnum() == WAITING) {
+           game.getWorld().getWorldBorder().setSize(10000);
+       }
        if(pl.getGameInfoMysql().getConnection() != null) {
+        //   Bukkit.getLogger().info("INSSEEEEEEEEEEEEEEERT");
            pl.getGameInfoMysql().insertPlayer(event.getPlayer());
        }
    //    event.getGame().getScoreboardManager().setBoard(SPlayer.getPlayer(event.getPlayer()));
@@ -80,17 +93,17 @@ public class TechnicGameListener implements Listener {
     public void onLeave(GameLeaveEvent event) {
         LGame game = (LGame) event.getGame();
         State state = game.getState();
-        if(game.getPlayersSize() <= 0 && (state != null && state.getEnum() != GameState.WAITING)) {
+        if(game.getPlayersSize() <= 0 && (state != null && state.getEnum() != WAITING)) {
             game.startGame();
             return;
         }
-        if(state != null && state.getEnum() == GameState.WAITING) {
+        if(state != null && state.getEnum() == WAITING) {
             game.broadCastColor("&fИгрок &a" + event.getPlayer().getName() + " &fпокинул игру (&a" +
-                    game.getPlayersSize() + "/&a" + game.getMaxPlayers() + "&f)");
+                    game.getPlayersSize() + "/&a" + game.getMaxPlayers() + "&f)",true);
         } else if(state != null && state.getEnum() == GameState.ACTIVEGAME) {
-            game.broadCastColor("&fИгрок &a" + event.getPlayer().getName() + " &fпокинул игру");
+            game.broadCastColor("&fИгрок &a" + event.getPlayer().getName() + " &fпокинул игру",true);
         }
-        if(game.getState() != null && game.getState().getEnum() == GameState.WAITING
+        if(game.getState() != null && game.getState().getEnum() == WAITING
                 && game.getPlayersSize() < game.getMinPlayersToStartCounting()) {
             ((WaitingState)game.getState()).stopCounting();
         }
@@ -101,7 +114,7 @@ public class TechnicGameListener implements Listener {
         Collections.shuffle(gamesList);
 
         for(LGame game: gamesList) {
-            boolean open = game.getState() != null && game.getState().getEnum() == GameState.WAITING;
+            boolean open = game.getState() != null && game.getState().getEnum() == WAITING;
             if(open && (optimal == null || (game.getPlayersSize() > optimal.getPlayersSize()))) {
                 optimal = game;
             }
@@ -119,6 +132,7 @@ public class TechnicGameListener implements Listener {
         sp.setTeam(null);
         pl.setExp(0);
         pl.setHealth(20D);
+        pl.setFireTicks(0);
         pl.setFoodLevel(20);
         pl.setLevel(1);
         pl.setGameMode(GameMode.ADVENTURE);;
@@ -155,7 +169,7 @@ public class TechnicGameListener implements Listener {
     @EventHandler
     public void onDeath(PlayerRespawnEvent event) {
         SPlayer sp = SPlayer.getPlayer(event.getPlayer());
-        if(inState(event.getPlayer(),GameState.WAITING)) {
+        if(inState(event.getPlayer(), WAITING)) {
             Location loc = ((LGame)sp.getGame()).getLobbyLocation();
             event.setRespawnLocation(loc);
         }

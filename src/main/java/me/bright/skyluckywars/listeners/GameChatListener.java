@@ -5,6 +5,8 @@ import me.bright.skylib.SPlayer;
 import me.bright.skylib.utils.Messenger;
 import me.bright.skyluckywars.LuckyWars;
 import net.kyori.adventure.text.Component;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -25,20 +27,26 @@ public class GameChatListener implements Listener {
     @EventHandler
     public void onChat(AsyncChatEvent event) {
         Component message = event.message();
+        Player player = event.getPlayer();
         SPlayer sp = SPlayer.getPlayer(event.getPlayer());
+        UserManager uManager = plugin.getLuckpermsApi().getUserManager();
+        User tu =
+                (uManager.isLoaded(player.getUniqueId()) ? uManager.getUser(player.getUniqueId())
+                        : uManager.loadUser(player.getUniqueId()).join());
+        String prefix = (tu.getCachedData().getMetaData().getPrefix() == null) ? "" : tu.getCachedData().getMetaData().getPrefix();
         if(sp.getGame() != null) {
             Component finalMessage = null;
             if(!sp.isSpectator()) {
-                finalMessage  = Component.text(
-                        event.getPlayer().getName() + Messenger.color("&7: &f")).append(
+                finalMessage  = Component.text(prefix +
+                        player.getName() + Messenger.color("&7: &f")).append(
                         message);
                 for(Player p: sp.getGame().getWorld().getPlayers()) {
                     p.sendMessage(finalMessage);
                 }
             } else {
-                finalMessage  = Component.text(
-                        event.getPlayer().getName() + Messenger.color(" &7(Spec): &f")).append(
-                        message);
+                finalMessage  = Component.text(prefix+
+                        player.getName() + Messenger.color(" &7(Spec): &f"))
+                        .append(message);
                 for(UUID uuid: sp.getGame().getSpectators()) {
                     Player p = Bukkit.getPlayer(uuid);
                     if(p != null) {
@@ -47,6 +55,9 @@ public class GameChatListener implements Listener {
                 }
             }
         }
+
         event.setCancelled(true);
     }
+
+
 }

@@ -55,13 +55,7 @@ public class GameBowsListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onTntBowHitEvent(TntBowHitEvent event) {
-        int chance = getRnd(5,25);
-        if(!luck(chance)) return;
-        World world =  event.getHitBowEvent().getEntity().getLocation().getWorld();
-        world.spawnEntity(event.getHitBowEvent().getEntity().getLocation(), EntityType.PRIMED_TNT);
-    }
+
 
     @EventHandler
     public void onSpiderBowHit(SpiderBowHitEvent event) {

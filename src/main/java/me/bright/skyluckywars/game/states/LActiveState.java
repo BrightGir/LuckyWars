@@ -75,7 +75,7 @@ public class LActiveState extends ActiveState {
                 if(secondsRemain == 0) {
                     timerBossbar.removeAll();
                     timerBossbar.setVisible(false);
-                    getGame().broadCastColor("&cДезматч &fначался");
+                    getGame().broadCastColor("&cДезматч &fначался",true);
                     List<Location> locs = ((LGame) getGame()).getDeathMathLocations();
                     int i = 0;
                     for(Player p: getGame().getPlayers()) {
@@ -93,7 +93,7 @@ public class LActiveState extends ActiveState {
                     int seconds = secondsRemain % 60;
                     String s2 = (seconds != 0) ? Messenger.correct(seconds, " " + seconds + " секунду"
                             ,
-                            " "+ seconds + " секунды", " " + seconds + " секунд") : "";
+                            " " + seconds + " секунды", " " + seconds + " секунд") : "";
                     String bossbarString = "&fДезматч через&c" + (((minutes == 0) ? ""
                             : Messenger.correct(minutes, " " + minutes + " минуту",
                             " " + minutes + " минуты", " " + minutes + " минут")))
@@ -107,7 +107,7 @@ public class LActiveState extends ActiveState {
                                 : Messenger.correct(minutes, " " + minutes + " минуту",
                                 " " + minutes + " минуты", " " + minutes + " минут")))
                                 + s21;
-                        getGame().broadCastColor(bossbarString1);
+                        getGame().broadCastColor(bossbarString1,true);
                     }
                     double percentage = (double) secondsRemain / fullSeconds;
                     timerBossbar.setTitle(Messenger.color(bossbarString));
@@ -172,12 +172,18 @@ public class LActiveState extends ActiveState {
                             " "+ seconds + " секунды", " " + seconds + " секунд") : "";
                     String bossbarString = "&fКонец игры через&c" + (((minutes == 0) ? ""
                             : Messenger.correct(minutes, " " + minutes + " минуту",
-                            " " + minutes + " минуты", " " + minutes + " минут"))) + " "
+                            " " + minutes + " минуты", " " + minutes + " минут"))) + ""
                             + s2;
                     double percentage = (double) secondsRemain / fullSeconds;
                     deathmatchBossbar.setTitle(Messenger.color(bossbarString));
                     deathmatchBossbar.setProgress(percentage);
                     secondsRemain--;
+                    getGame().getLivePlayers().forEach(p -> {
+                        Player pl = Bukkit.getPlayer(p);
+                        if(!getGame().getWorld().getWorldBorder().isInside(pl.getLocation())) {
+                            pl.damage(10D);
+                        }
+                    });
                 }
             }
         }.runTaskTimer(getGame().getArena().getPlugin(),0,20L);

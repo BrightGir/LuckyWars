@@ -27,6 +27,7 @@ public class EnchantmentSet implements Cloneable{
         this.enchs = new ArrayList<>();
         this.mapEnchs = new HashMap<>();
         this.random = new Random();
+
     }
 
     protected void setMapEnchs(Map<Enchantment, LEnchantment> mapEnchs) {

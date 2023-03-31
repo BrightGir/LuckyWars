@@ -35,14 +35,16 @@ public class FrozenBow extends LItem implements Enchantable {
                 en.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,20 * getRnd(3,6),
                         9,false,false));
                 World world = en.getWorld();
-                world.spawnParticle(Particle.ITEM_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
+                world.spawnParticle(Particle.BLOCK_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
                         Material.PACKED_ICE.createBlockData());
+                world.playEffect(en.getLocation().clone().add(0,0.5,0),Effect.STEP_SOUND,Material.BLUE_ICE);
             } else if(luck(chance)) {
                 en.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,20 * getRnd(3,6),
                         1,false,false));
                 World world = en.getWorld();
-                world.spawnParticle(Particle.ITEM_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
+                world.spawnParticle(Particle.BLOCK_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
                         Material.PACKED_ICE.createBlockData());
+                world.playEffect(en.getLocation().clone().add(0,0.5,0),Effect.STEP_SOUND,Material.BLUE_ICE);
             }
         });
     //  setGenerateAction(item -> {

@@ -235,8 +235,10 @@ public abstract class LItem {
         if(this instanceof Enchantable) {
             setEnchantments(item,sp, ((Enchantable)this).getEnchSet(),getDropCategory());
         }
-        item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        item.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        if(getDropCategory() != DropSet.DropCategory.BLOCKS) {
+            item.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            item.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        }
         item.setAmount(getRnd(minAmount,maxAmount));
         if(glowing) item.addEnchantment(new Glow(sp.getGame().getArena().getPlugin()),0);
         if(generateAction != null) getGenerateAction().accept(item);

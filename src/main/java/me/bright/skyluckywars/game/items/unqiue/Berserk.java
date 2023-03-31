@@ -30,6 +30,7 @@ public class Berserk extends LItem {
 
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,20 * 5,2,false
                     ,false));
+            decreaseAmountItemInHand(p);
         });
         setGlowing(true);
     }

@@ -4,6 +4,7 @@ import me.bright.skylib.game.Game;
 import me.bright.skylib.utils.ItemBuilder;
 import me.bright.skyluckywars.game.dropsets.DropSet;
 import me.bright.skyluckywars.game.items.LItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -20,11 +21,12 @@ public class TNT extends LItem {
         setClickAction(event -> {
             Player p = event.getPlayer();
            // p.getInventory().removeItem(new ItemStack(Material.TNT, 1));
+        //    Bukkit.getLogger().info("click");
             if(event.getClickedBlock() != null) {
                 Vector v = event.getClickedBlock().getLocation().getDirection();
                 TNTPrimed tnt = (TNTPrimed) p.getWorld()
-                        .spawnEntity(p.getLocation().clone().add(v.getX(), v.getY()+1, v.getZ()), EntityType.PRIMED_TNT);
-                tnt.setVelocity(v);
+                        .spawnEntity(event.getClickedBlock().getLocation().clone().add(v.getX(), v.getY()+1, v.getZ()), EntityType.PRIMED_TNT);
+                //   tnt.setVelocity(v);
                 //   TNTPrimed tnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
                 //   tnt.setVelocity(p.getLocation().toVector().normalize().multiply(2));
 

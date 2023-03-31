@@ -5,5 +5,5 @@ api-version: 1.16
 commands:
   getluckyblock:
   forcestart:
-depend: [SkyLib, WorldEdit]
+depend: [SkyLib,LuckPerms]
 

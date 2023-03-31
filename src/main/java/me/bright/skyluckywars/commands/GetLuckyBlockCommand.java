@@ -4,6 +4,7 @@ import me.bright.skylib.SPlayer;
 import me.bright.skylib.utils.FormatChatColor;
 import me.bright.skylib.utils.Messenger;
 import me.bright.skyluckywars.LuckyWars;
+import me.bright.skyluckywars.game.items.unqiue.Berserk;
 import me.bright.skyluckywars.game.items.unqiue.Pearl;
 import me.bright.skyluckywars.game.items.unqiue.SlimePlatform;
 import me.bright.skyluckywars.game.items.unqiue.TNT;
@@ -33,9 +34,9 @@ public class GetLuckyBlockCommand implements CommandExecutor {
         if(!sender.isOp()) {
             return true;
         }
-        ((Player)sender).getInventory().addItem(plugin.getLuckyBlock());
-       // ((Player)sender).getInventory().addItem(new TNT().generate(SPlayer.getPlayer((Player)sender)));
-        ((Player)sender).getInventory().addItem(new SlimePlatform().generate(SPlayer.getPlayer((Player)sender)));
+      //  ((Player)sender).getInventory().addItem(plugin.getLuckyBlock());
+        ((Player)sender).getInventory().addItem(new TNT().generate(SPlayer.getPlayer((Player)sender)));
+        //((Player)sender).getInventory().addItem(new Berserk().generate(SPlayer.getPlayer((Player)sender)));
         //((Player)sender).getInventory().addItem(new Sphere().generate(SPlayer.getPlayer((Player)sender)));
 
         return true;

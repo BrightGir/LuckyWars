@@ -35,13 +35,13 @@ public class SnakeBow extends LItem implements Enchantable {
                 en.addPotionEffect(new PotionEffect(PotionEffectType.POISON,20 * 3,
                         2,false,false));
                 World world = en.getWorld();
-                world.spawnParticle(Particle.ITEM_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
+                world.spawnParticle(Particle.BLOCK_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
                         Material.GREEN_CONCRETE.createBlockData());
             } else if(luck(chance)) {
                 en.addPotionEffect(new PotionEffect(PotionEffectType.POISON,20 * getRnd(3,6),
                         getRnd(1,2),false,false));
                 World world = en.getWorld();
-                world.spawnParticle(Particle.ITEM_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
+                world.spawnParticle(Particle.BLOCK_CRACK, en.getLocation(), 1, 1, 0.1, 0.1, 0.1,
                         Material.GREEN_CONCRETE.createBlockData());
             }
         });

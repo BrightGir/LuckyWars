@@ -1,9 +1,11 @@
 package me.bright.skyluckywars.game.states;
 
+import me.bright.skylib.SPlayer;
 import me.bright.skylib.game.Game;
 import me.bright.skylib.game.states.WaitingState;
 import me.bright.skyluckywars.LuckyWars;
 import me.bright.skyluckywars.game.LGame;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class LWaitingState extends WaitingState {
@@ -14,6 +16,11 @@ public class LWaitingState extends WaitingState {
 
     @Override
     public void startState() {
+        getGame().getWorld().getWorldBorder().reset();
+        LGame lg = (LGame) getGame();
+        // getGame().getWorld().getWorldBorder().setCenter(lg.getBorderCenterX(),lg.getBorderCenterZ());
+   //     getGame().getWorld().getWorldBorder().setSize(10000);
+        //   Bukkit.getServer().getLogger().info("xui1");
         setDefaultStatesOfPlayers();
     }
 

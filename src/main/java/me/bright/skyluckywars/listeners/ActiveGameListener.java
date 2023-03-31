@@ -239,6 +239,12 @@ public class ActiveGameListener implements Listener {
                 return;
             }
             Entity entity = event.getEntity();
+            Player target = (Player) event.getTarget();
+            if(SPlayer.getPlayer(target).isSpectator()) {
+                event.setCancelled(true);
+                return;
+            }
+
             if(entity.hasMetadata(LInfo.MOB_OWNER.getKey())  &&
                     entity.getMetadata(LInfo.MOB_OWNER.getKey()).get(0).asString()
                             .equalsIgnoreCase(event.getTarget().getUniqueId().toString())) {
@@ -278,6 +284,12 @@ public class ActiveGameListener implements Listener {
     @EventHandler
     public void entityByEntity(EntityDamageByEntityEvent event) {
         if(event.getDamager() instanceof Firework) event.setCancelled(true);
+        if(event.getDamager() instanceof LightningStrike) {
+            if(event.getDamager().hasMetadata("uuid") &&
+                    event.getDamager().getMetadata("uuid").get(0).asString() == event.getEntity().getUniqueId().toString()) {
+                event.setCancelled(true);
+            }
+        }
     }
     @EventHandler
     public void onFood(FoodLevelChangeEvent event) {
@@ -306,7 +318,7 @@ public class ActiveGameListener implements Listener {
                 }
 
                 if(game != null) {
-                    game.broadCastColor("&fИгрок &c" + event.getEntity().getName() + " &fбыл убит игроком " + killer.getName());
+                    game.broadCastColor("&fИгрок &c" + event.getEntity().getName() + " &fбыл убит игроком " + killer.getName(),true);
                 }
                 SPlayer spKiller = SPlayer.getPlayer((Player)entityKiller);
                 spKiller.incrementIntegerValue(LInfo.KILLS.getKey());
@@ -339,7 +351,7 @@ public class ActiveGameListener implements Listener {
                     s += "погиб";
                 }
                 if (game != null) {
-                    game.broadCastColor(s);
+                    game.broadCastColor(s,true);
                 }
             }
         //    Bukkit.getLogger().info("in endmg isSpect " + String.valueOf(SPlayer.getPlayer(victim).isSpectator()));
@@ -387,7 +399,14 @@ public class ActiveGameListener implements Listener {
         player.setCustomNameVisible(false);
         player.setInvulnerable(true);
         player.setInvisible(true);
+        player.setSilent(true);;
         player.setCollidable(false);
+        player.spigot().setCollidesWithEntities(false);
+        LGame game = (LGame) SPlayer.getPlayer(player).getGame();
+        game.getLivePlayers().forEach(liveP -> {
+            Player livePlayer = Bukkit.getPlayer(liveP);
+            livePlayer.hidePlayer(game.getPlugin(),player);
+        });
       //  SPlayer.getPlayer(player).setSpectator(true);
 
         SPlayer.getPlayer(player).setSpectator(true);

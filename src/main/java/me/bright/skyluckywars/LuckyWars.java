@@ -2,6 +2,8 @@ package me.bright.skyluckywars;
 
 
 
+import com.grinderwolf.swm.api.SlimePlugin;
+
 import me.bright.skylib.Arena;
 import me.bright.skylib.game.GameMode;
 import me.bright.skylib.utils.ItemBuilder;
@@ -18,16 +20,21 @@ import me.bright.skyluckywars.listeners.*;
 import me.bright.skyluckywars.utils.Constants;
 import me.bright.skyluckywars.utils.armor.ArmorListener;
 import me.bright.skyluckywars.utils.glowing.Glow;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,7 +42,6 @@ import java.util.List;
 
 public final class LuckyWars extends JavaPlugin {
 
-    boolean lobby;
     private SettingsConfig settingsConfig;
     private GamesConfig gamesConfig;
   //  private MVWorldManager wmanager;
@@ -43,12 +49,14 @@ public final class LuckyWars extends JavaPlugin {
     private GameInfoMySQL dbinfo;
     private List<LGame> games;
     private String serverLobbyName;
+    private SlimePlugin slimePlugin;
+    private LuckPerms luckperms;
 
     @Override
     public void onEnable() {
         games = new ArrayList<>();
-
         load();
+        setupLuckPerms();
         loadGames();
         this.getServer().getPluginManager().registerEvents(new TechnicGameListener(this),this);
         this.getServer().getPluginManager().registerEvents(new ActiveGameListener(this),this);
@@ -62,8 +70,39 @@ public final class LuckyWars extends JavaPlugin {
         getCommand("getluckyblock").setExecutor(new GetLuckyBlockCommand(this));
         getCommand("forcestart").setExecutor(new ForceStartCommand());
         Constants.LUCKY_BLOCK_NAME = this.getGamesConfig().getString("blockname");
+     //   setupLuckPerms();
 
         registerGlow();
+    }
+
+    public void setupLuckPerms() {
+       RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+       if (provider != null) {
+           luckperms = provider.getProvider();
+       }
+    //    luckperms = LuckPermsProvider.get();
+    }
+
+    public LuckPerms getLuckpermsApi() {
+        return luckperms;
+    }
+
+    private void importWorld(String name) {
+   //     Bukkit.unloadWorld(name,false);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    String path = Bukkit.getWorldContainer() + File.separator + name;
+                    slimePlugin.importWorld(new File(path),name,slimePlugin.getLoader("file"));
+                   // Bukkit.getLogger().info("IMPORTED, PATH = " + path);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                 //   Bukkit.getLogger().info("NOT IMPORTED, PATH = ");
+                }
+            }
+        }.runTaskAsynchronously(this);
     }
 
     public ItemStack getLuckyBlock() {
@@ -97,7 +136,12 @@ public final class LuckyWars extends JavaPlugin {
             Bukkit.getLogger().info("[LuckyWars] Database didn't loaded");
         }
         serverLobbyName = settingsConfig.getConfig().getString("settings.lobby_server_name");
+      //  slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
      //   wmanager = ((MultiverseCore)Bukkit.getServer().getPluginManager().getPlugin("Multiverse-Core")).getMVWorldManager();
+    }
+
+    public SlimePlugin getSlimePlugin() {
+        return slimePlugin;
     }
 
     public GameConnectorMySQL getGameMySQL() {
@@ -147,7 +191,7 @@ public final class LuckyWars extends JavaPlugin {
            // new WorldCreator(worldName).environment(World.Environment.NORMAL).createWorld();
             Bukkit.getLogger().info("Load world, worldName = " + ((worldName == null) ? "null" : worldName));
             Bukkit.createWorld(new WorldCreator(worldName));
-
+        //    Bukkit.unloadWorld(worldName,false);
           // Bukkit.createWorld(new WorldCreator(this.getDataFolder() + File.separator + "maps" + File.separator + worldName));
             //Bukkit.createWorld(new WorldCreator(worldName).environment(World.Environment.NORMAL));
             //World world = new WorldCreator(worldName).environment(World.Environment.NORMAL).createWorld();
@@ -157,6 +201,10 @@ public final class LuckyWars extends JavaPlugin {
             GameMode mode = GameMode.valueOf(gameSec.getString("mode"));
             String mapName = gameSec.getString("map_name");
             LGame game = new LGame(Bukkit.getWorld(worldName),arena,maxPlayers,teamSize,gameSec.getName(),mode,this,mapName);
+
+
+          //  Bukkit.getLogger().info(String.valueOf("world == null + " + game.getWorld() == null));
+
             for(String sloc: gameSec.getStringList("islands_locations")) {
                 String[] loc = sloc.split(", ");
                 game.addIslandsLocation(Double.parseDouble(loc[0]),Double.parseDouble(loc[1]),Double.parseDouble(loc[2]),
@@ -166,6 +214,11 @@ public final class LuckyWars extends JavaPlugin {
             double borderCenterZ = gameSec.getDouble("border_center_z");
             double borderSize = gameSec.getDouble("border_size");
             double deathMatchBorderSize = gameSec.getDouble("deathmatch_border_size");
+            String[] schematiclLocString = gameSec.getString("schematic_location").split(", ");
+
+           game.setSchematicFile(new File(this.getDataFolder() + File.separator +
+                   gameSec.getString("schematic_file_path").replace("&",File.separator)));
+            game.setSchematicLoadLocation(Integer.parseInt(schematiclLocString[0]),Integer.parseInt(schematiclLocString[1]),Integer.parseInt(schematiclLocString[2]));
             game.setBorderCenter(borderCenterX,borderCenterZ);
             game.setBorderSize(borderSize);
             game.setDeathMathBorderSize(deathMatchBorderSize);
@@ -189,6 +242,7 @@ public final class LuckyWars extends JavaPlugin {
             game.setLobbyLocation(Double.parseDouble(lobbyLoc[0]),Double.parseDouble(lobbyLoc[1]),Double.parseDouble(lobbyLoc[2]),
                     Float.parseFloat(lobbyLoc[3]),Float.parseFloat(lobbyLoc[4]));
             // game.backupWorld();
+        //    importWorld(worldName);
             game.setMapname(mapName);
             arena.loadGame(game);
             try {

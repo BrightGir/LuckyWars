@@ -44,6 +44,12 @@ public class SpectatorModeListener implements Listener {
                 event.setCancelled(true);
             }
         }
+        if(event.getEntity() instanceof Player) {
+            Player p = (Player)event.getEntity();
+            if(SPlayer.getPlayer(p).isSpectator()) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     @EventHandler

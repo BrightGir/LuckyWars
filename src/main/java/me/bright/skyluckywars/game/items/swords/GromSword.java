@@ -1,5 +1,6 @@
 package me.bright.skyluckywars.game.items.swords;
 
+import me.bright.skylib.SPlayer;
 import me.bright.skylib.utils.Messenger;
 import me.bright.skyluckywars.game.dropsets.DropSet;
 import me.bright.skyluckywars.game.items.Enchantable;
@@ -9,7 +10,10 @@ import me.bright.skyluckywars.utils.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -34,9 +38,13 @@ public class GromSword  extends LItem implements Enchantable
                 if(event.getEntity() instanceof LivingEntity) {
                     LivingEntity ent = (LivingEntity) event.getEntity();
                     //     Bukkit.getLogger().info("podl");
-                    ent.setVelocity(new Vector(0,Messenger.rnd(4,7),0));
+              //      ent.setVelocity(new Vector(0,Messenger.rnd(4,7),0));
+                    Player damager = (Player) event.getDamager();
                     Location loc = ent.getLocation();
-                    loc.getWorld().strikeLightning(loc);
+                    LightningStrike strike = loc.getWorld().strikeLightning(loc);
+                    strike.setMetadata("uuid",new FixedMetadataValue(
+                            SPlayer.getPlayer(damager).getArena().getPlugin(),damager.getUniqueId().toString()));
+
                 }
             }
         });

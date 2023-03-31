@@ -26,6 +26,8 @@ public class GamesConfig extends SConfig {
         dataConfig("games.luckywars-1.map_name","Спанчбоб");
         dataConfig("games.luckywars-1.lobby_spawn_location","-240, 48, 284, 0, 0");
         dataConfig("games.luckywars-1.spectator_spawn","-240, 48, 284, 0, 0");
+        dataConfig("games.luckywars-1.schematic_location","-240, 20, 284");
+        dataConfig("games.luckywars-1.schematic_file_path","schemas&game1.schem");
         dataConfig("games.luckywars-1.border_size",25);
         dataConfig("games.luckywars-1.deathmatch_border_size",10);
         dataConfig("games.luckywars-1.border_center_x",-280);
