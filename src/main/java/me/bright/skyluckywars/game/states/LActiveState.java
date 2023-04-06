@@ -217,8 +217,11 @@ public class LActiveState extends ActiveState {
         int i = 0;
         for(Team t: getGame().getTeamManager().getTeams()) {
             for(UUID up: t.getPlayersUUID()) {
-                Bukkit.getPlayer(up).spigot().respawn();
-                Bukkit.getPlayer(up).teleport(islands.get(i));
+                Player p = Bukkit.getPlayer(up);
+                if(p != null) {
+                    p.spigot().respawn();
+                    p.teleport(islands.get(i));
+                }
                 i++;
             }
         }

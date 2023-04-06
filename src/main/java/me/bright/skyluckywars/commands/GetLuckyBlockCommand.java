@@ -34,10 +34,8 @@ public class GetLuckyBlockCommand implements CommandExecutor {
         if(!sender.isOp()) {
             return true;
         }
-      //  ((Player)sender).getInventory().addItem(plugin.getLuckyBlock());
+
         ((Player)sender).getInventory().addItem(new TNT().generate(SPlayer.getPlayer((Player)sender)));
-        //((Player)sender).getInventory().addItem(new Berserk().generate(SPlayer.getPlayer((Player)sender)));
-        //((Player)sender).getInventory().addItem(new Sphere().generate(SPlayer.getPlayer((Player)sender)));
 
         return true;
     }
